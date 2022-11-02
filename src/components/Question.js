@@ -1,26 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import { nanoid } from "nanoid";
+import Answer from "./Answer";
 
 function Question(props) {
-	// mix up answers in an array
-	const answers = props.answers;
-
-	// array of objects used for answers
-	const answerObjectsArray = answers.map((answer) => ({
-		value: answer,
-		isCorrect: props.correctAnswer === answer,
-		id: nanoid(),
-	}));
-
-	const answerElements = answerObjectsArray.map((answer) => (
-		<button
+	const answerElements = props.answers.map((answer) => (
+		<Answer
 			key={answer.id}
-			className="btn-answer"
-			onClick={props.handleAnswerClick}
+			questionID={props.id}
+			id={answer.id}
+			handleClick={props.handleAnswerClick}
 			value={answer.value}
-		>
-			{answer.value}
-		</button>
+			correctAnswer={props.correctAnswer}
+			isSelected={answer.isSelected}
+			isChecking={props.isChecking}
+		/>
 	));
 
 	return (

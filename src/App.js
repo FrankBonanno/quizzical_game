@@ -6,6 +6,7 @@ import Start from "./components/Start";
 import Question from "./components/Question";
 
 function App() {
+	/* STATE VARIABLES */
 	// all Questions data
 	const [questions, setQuestions] = useState([]);
 
@@ -13,30 +14,53 @@ function App() {
 	const [isStarted, setIsStarted] = useState(false);
 
 	// Check switch state var
-	const [isChecked, setIsChecked] = useState(false);
+	const [isChecking, setIsChecking] = useState(false);
 
 	// Correct answer num
 	const [correctNum, setCorrectNum] = useState(0);
 
+	/* GATHER API DATA */
 	// Get 5 questions from api
 	useEffect(() => {
+		if (!isStarted) {
+			return;
+		}
 		fetch("https://opentdb.com/api.php?amount=5&category=9&type=multiple")
 			.then((res) => res.json())
 			.then((data) =>
 				setQuestions(
-					data.results.map((question) => ({
-						question: question.question,
-						id: nanoid(),
-						correctAnswer: question.correct_answer,
-						answers: [
+					data.results.map((question) => {
+						const answersArray = [
 							question.correct_answer,
 							...question.incorrect_answers,
-						].sort((a, b) => 0.5 - Math.random()),
-						submittedAnswer: "",
-					}))
+						].sort((a, b) => 0.5 - Math.random());
+
+						const answers = createAnswersObjects(
+							question,
+							answersArray
+						);
+
+						return {
+							question: question.question,
+							id: nanoid(),
+							correctAnswer: question.correct_answer,
+							answers: answers,
+							submittedAnswer: "",
+						};
+					})
 				)
 			);
-	}, []);
+	}, [isStarted]);
+
+	// Creates array of object from the given question
+	function createAnswersObjects(question, arrayOfStrings) {
+		return arrayOfStrings.map((answer) => ({
+			value: answer,
+			isCorrect: question.correctAnswer === answer,
+			id: nanoid(),
+			isSelected: false,
+		}));
+	}
 
 	// Click Start Button
 	function clickStart() {
@@ -45,9 +69,23 @@ function App() {
 
 	// Handle checking all answers
 	function checkAnswers() {
+		// check if all questions were answered
 		const allAnswered = questions.every(
 			(question) => question.submittedAnswer
 		);
+
+		if (!allAnswered) {
+			return;
+		}
+
+		if (isChecking) {
+			setIsChecking(false);
+			setIsStarted(false);
+			setCorrectNum(0);
+			return;
+		}
+
+		setIsChecking(true);
 
 		let count = 0;
 		for (let i = 0; i < questions.length; i++) {
@@ -66,10 +104,20 @@ function App() {
 
 		setQuestions((oldQuestions) => {
 			return oldQuestions.map((question) => {
+				let selectedAnswers = question.answers.map((answer) => {
+					return value === answer.value
+						? { ...answer, isSelected: true }
+						: {
+								...answer,
+								isSelected: false,
+						  };
+				});
+
 				return questionID === question.id
 					? {
 							...question,
 							submittedAnswer: value,
+							answers: selectedAnswers,
 					  }
 					: question;
 			});
@@ -81,9 +129,11 @@ function App() {
 		<Question
 			question={question.question}
 			key={question.id}
+			id={question.id}
 			correctAnswer={question.correctAnswer}
 			answers={question.answers}
 			handleAnswerClick={(event) => handleAnswerClick(event, question.id)}
+			isChecking={isChecking}
 		/>
 	));
 
@@ -94,13 +144,17 @@ function App() {
 			) : (
 				<div className="quiz">
 					{questionElements}
-					<button
-						className="btn-start btn-check"
-						onClick={checkAnswers}
-					>
-						Check Answers
-					</button>
-					<p>{correctNum}</p>
+					<div className="flex-row">
+						{isChecking && (
+							<p className="correct-guesses">{`You scored ${correctNum}/5 correct answers`}</p>
+						)}
+						<button
+							className="btn-start btn-check"
+							onClick={checkAnswers}
+						>
+							{isChecking ? "Play Again" : "Check Answers"}
+						</button>
+					</div>
 				</div>
 			)}
 		</div>

@@ -28,6 +28,13 @@
 	justify-content: center;
 }
 
+.flex-row {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+}
+
 /* MAIN */
 .App {
 	height: 100vh;
@@ -71,6 +78,10 @@
 	color: var(--text-light);
 }
 
+.btn-start:hover {
+	cursor: pointer;
+}
+
 .btn-start:active {
 	box-shadow: inset 3px 3px 10px var(--text-dark);
 }
@@ -100,6 +111,10 @@
 	align-self: center;
 }
 
+.btn-check:hover {
+	cursor: pointer;
+}
+
 .btn-answer {
 	padding: 6px 0.5rem;
 	border: 1px solid var(--text-dark);
@@ -110,8 +125,45 @@
 
 .btn-answer:hover {
 	background-color: rgba(0, 0, 0, 0.05);
+	cursor: pointer;
+}
+
+.btn-guess {
+	background-color: var(--btn-guess);
+	border-color: var(--btn-guess);
+	box-shadow: inset 3px 3px 10px gray;
+}
+
+.btn-guess:hover {
+	background-color: var(--btn-guess);
+}
+
+.btn-correct {
+	background-color: var(--btn-correct);
+	border-color: var(--btn-correct);
+	box-shadow: inset 3px 3px 10px gray;
+}
+
+.btn-incorrect {
+	background-color: var(--btn-incorrect);
+	border-color: var(--btn-incorrect);
+	box-shadow: inset 3px 3px 10px gray;
+	opacity: 50%;
 }
 
 hr {
 	border: 1px solid #dbdef0;
+}
+
+.correct-guesses {
+	margin-top: 2.5rem;
+
+	font-family: "Inter";
+	font-style: normal;
+	font-weight: 700;
+	font-size: 1rem;
+	line-height: 15px;
+	height: 2rem;
+
+	color: #293264;
 }
