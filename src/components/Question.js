@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import { nanoid } from "nanoid";
-import Answer from "./Answer";
+import React from 'react';
+import Answer from './Answer';
 
 function Question(props) {
 	const answerElements = props.answers.map((answer) => (
